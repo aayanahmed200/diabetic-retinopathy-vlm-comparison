@@ -1205,7 +1205,14 @@ if PILOT_MODE:
 
     os.makedirs("tests", exist_ok=True)
     with open("tests/test_metadata_subset.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["id_code", "image_path", "diagnosis"])
+        # lineterminator="\n": csv.writer's own default is "\r\n" *regardless of OS*
+        # (that's why the file is opened with newline="" -- to stop Python's text-mode
+        # layer from further translating that into "\r\r\n"). Left at the csv module's
+        # default, every regeneration would write CRLF line endings while every other
+        # artifact this script/notebook produces (predictions.csv etc., via pandas
+        # to_csv) uses plain "\n" on Linux/macOS/CI -- a spurious whole-file diff on
+        # every single line, even when every row's content and order are unchanged.
+        writer = csv.DictWriter(f, fieldnames=["id_code", "image_path", "diagnosis"], lineterminator="\n")
         writer.writeheader()
         for row in pilot_rows:
             writer.writerow({
