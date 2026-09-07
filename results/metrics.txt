@@ -1,3 +1,3 @@
 Gemini: N=125, Accuracy=0.216, QWK=-0.060, MAE=1.632, Accuracy95CI=[0.144, 0.288]
-Medgemma: N=125, Accuracy=0.232, QWK=0.178, MAE=1.416, Accuracy95CI=[0.16, 0.304]
-Retizero: N=125, Accuracy=0.232, QWK=-0.070, MAE=1.528, Accuracy95CI=[0.16, 0.312]
+MedGemma: N=125, Accuracy=0.232, QWK=0.178, MAE=1.416, Accuracy95CI=[0.16, 0.304]
+RetiZero: N=125, Accuracy=0.232, QWK=-0.070, MAE=1.528, Accuracy95CI=[0.16, 0.312]
