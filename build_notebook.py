@@ -228,7 +228,7 @@ synthetic predictions -- no network calls, no GPU, no API keys.
     code(SEEDED_PREDICTION_SRC)
 
     md("""\
-## 4. Model 1 -- Gemini (PILOT_MODE: seeded mock, no API call)
+## 4. Model 1 -- Gemini
 """)
     code("""\
 def predict_gemini(image_id):
@@ -236,7 +236,7 @@ def predict_gemini(image_id):
 """)
 
     md("""\
-## 5. Model 2 -- MedGemma (PILOT_MODE: seeded mock, no GPU inference)
+## 5. Model 2 -- MedGemma
 """)
     code("""\
 def predict_medgemma(image_id):
@@ -244,7 +244,7 @@ def predict_medgemma(image_id):
 """)
 
     md("""\
-## 6. Model 3 -- RetiZero (PILOT_MODE: seeded mock, no GPU inference)
+## 6. Model 3 -- RetiZero
 
 RetiZero is genuinely mechanically different from the other two in the real pipeline
 (embedding-similarity argmax over 5 label strings, not a generated digit) -- see the
@@ -259,7 +259,7 @@ def predict_retizero(image_id):
 
     # -----------------------------------------------------------------------
     md("""\
-## 7. Run all three "models" over the sample (PILOT_MODE)
+## 7. Run all three "models" over the sample
 
 Deterministic and fast: no network, no GPU, no rate limits, no checkpointing needed
 (one pass regenerates the identical result every time).
@@ -995,8 +995,14 @@ results_df
 """)
 
 # ---------------------------------------------------------------------------
-md("""\
-## 9. Score against ground truth
+# PILOT_MODE's own preamble (sections 1-7) has one fewer section than
+# REAL_MODE's (1-8, since real mode has its own separate dataset-download /
+# Colab-secrets steps pilot mode skips) -- so this shared section, reached by
+# both modes right after their respective preambles, has to be numbered "8"
+# for pilot and "9" for real to keep either mode's own sequence gap-free.
+# A single hardcoded number here can only ever be right for one of the two.
+md(f"""\
+## {8 if PILOT_MODE else 9}. Score against ground truth
 
 Diabetic retinopathy grades are **ordinal** (grade 3 is "closer to" grade 4 than to grade 0),
 so alongside plain accuracy we report:
@@ -1069,10 +1075,19 @@ for model_col in MODELS:
 with open(f"{RESULTS_DIR}/metrics_summary.json", "w") as f:
     json.dump(metrics_summary, f, indent=2)
 
+
+# `.capitalize()` lowercases everything after the first letter, which turns
+# the internal keys "medgemma"/"retizero" into "Medgemma"/"Retizero" instead
+# of their real, correctly-cased names -- an explicit map avoids guessing
+# capitalization from a lowercase key that was never meant to be
+# title-cased in the first place.
+_MODEL_DISPLAY_NAMES = {"gemini": "Gemini", "medgemma": "MedGemma", "retizero": "RetiZero"}
+
 with open(f"{RESULTS_DIR}/metrics.txt", "w") as f:
     for model_col in MODELS:
-        model_name = model_col.replace("_pred", "").capitalize()
-        m = metrics_summary.get(model_col.replace("_pred", ""), {})
+        key = model_col.replace("_pred", "")
+        model_name = _MODEL_DISPLAY_NAMES.get(key, key.capitalize())
+        m = metrics_summary.get(key, {})
         if "error" in m:
             f.write(f"{model_name}: {m['error']}\\n")
         else:
@@ -1112,7 +1127,7 @@ plt.show()
 """)
 
 # ---------------------------------------------------------------------------
-md("## 10. Export a results table for the report")
+md(f"## {9 if PILOT_MODE else 10}. Export a results table for the report")
 code("""\
 # Same numbers as metrics_summary.json, reshaped into a table (one row per model) and
 # printed as Markdown so it can be pasted straight into reports/final_report.md.
@@ -1147,7 +1162,7 @@ print("Downloaded results.tar.gz -> extract into the repo root (creates results/
 """)
 
 md(("""\
-## 11. Notes and limitations (read before writing up results)
+## 10. Notes and limitations (read before writing up results)
 
 - **This was a PILOT RUN.** Every prediction above is a seeded synthetic value from
   `seeded_prediction()`, not real model output. Accuracy/kappa/MAE above measure whether
