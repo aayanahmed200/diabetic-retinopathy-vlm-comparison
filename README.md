@@ -30,9 +30,6 @@ python build_notebook.py
 
 For a real run, configure `KAGGLE_USERNAME`, `KAGGLE_KEY`, `GEMINI_API_KEY`, and `HF_TOKEN`, set `PILOT_MODE=0`, and execute the generated notebook in a suitable GPU environment.
 
-## Notes and limitations
-
-The default pilot uses 125 synthetic metadata rows and seeded predictions; its outputs must not be interpreted as model performance. Real mode has not been executed. RetiZero uses a different prediction approach from the generative models, and ground-truth grades can involve human disagreement. APTOS images are not redistributed; the repository includes an original schematic instead.
 
 ## License
 
