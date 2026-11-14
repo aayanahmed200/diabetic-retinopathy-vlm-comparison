@@ -4,17 +4,17 @@
 
 A research scaffold comparing three vision-language approaches for diabetic-retinopathy severity grading using the APTOS 2019 dataset.
 
-> **Important:** Checked-in pilot outputs are generated from synthetic data and seeded mock predictions. They are not real model results, clinical evidence, or a validated comparison. Real model inference has not yet been run.
+> **Pilot disclosure:** Checked-in outputs use synthetic data and seeded mock predictions. They are not real model results, clinical evidence, or a validated comparison. Real model inference has not yet been run.
 
 ## Overview
 
-The project compares a general-purpose multimodal model (Gemini), a medical vision-language model (MedGemma), and the retinal model RetiZero. RetiZero uses image-to-label embedding similarity, while the other systems generate predictions, so their methods are not identical.
+The project compares Gemini, MedGemma, and RetiZero. RetiZero uses image-to-label embedding similarity, while the other systems generate predictions, so the methods are not identical.
 
 ## Highlights
 
-- A reproducible notebook pipeline for data loading, prediction, and evaluation.
-- Evaluation metrics include quadratic-weighted Cohen's kappa, accuracy with bootstrap confidence intervals, mean absolute grade error, per-class precision and recall, and confusion matrices.
-- The reference grading scale is ICDR 0–4: no DR, mild NPDR, moderate NPDR, severe NPDR, and proliferative DR.
+- Reproducible notebook pipeline for data loading, prediction, and evaluation.
+- Metrics include quadratic-weighted Cohen's kappa, accuracy with bootstrap confidence intervals, mean absolute grade error, per-class precision and recall, and confusion matrices.
+- Uses the ICDR 0–4 severity scale.
 - Pilot mode runs without external credentials and produces deterministic synthetic outputs.
 
 ## Technology
@@ -32,19 +32,7 @@ For a real run, configure `KAGGLE_USERNAME`, `KAGGLE_KEY`, `GEMINI_API_KEY`, and
 
 ## Notes and limitations
 
-- The default pilot uses 125 synthetic metadata rows and seeded predictions; its outputs must not be interpreted as model performance.
-- Real mode has not been executed. Do not describe the project as a tested model comparison until real inference and validation are complete.
-- RetiZero uses a different prediction approach from the generative models, and ground-truth grades can involve human disagreement.
-- APTOS images are not redistributed; the repository includes an original schematic instead.
-
-## Project files
-
-- `build_notebook.py` — regenerates the notebook.
-- `notebooks/DR_VLM_Comparison.ipynb` — pilot notebook by default.
-- `reports/final_report.md` — methods, pilot results, and disclosures.
-- `results/` — checked-in synthetic pilot artifacts.
-- `figures/` — reference figures.
-- `.github/workflows/main.yml` — CI for the pilot notebook.
+The default pilot uses 125 synthetic metadata rows and seeded predictions; its outputs must not be interpreted as model performance. Real mode has not been executed. RetiZero uses a different prediction approach from the generative models, and ground-truth grades can involve human disagreement. APTOS images are not redistributed; the repository includes an original schematic instead.
 
 ## License
 
