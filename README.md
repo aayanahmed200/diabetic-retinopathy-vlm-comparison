@@ -14,7 +14,7 @@ The script can also generate a real-run notebook when `PILOT_MODE=0`. That path 
 - `notebooks/` — generated comparison notebook.
 - `reports/final_report.md` — explanation of the pilot methodology and results.
 - `results/` — pilot metrics, predictions, summary tables and plots.
-- `tests/` — checks for metadata sampling, prediction reproducibility and evaluation logic.
+- `tests/test_metadata_subset.csv` — synthetic metadata fixture used by the notebook generator; this repository does not currently include a pytest test suite.
 - `.env.example` — names of credentials used by the real-run workflow.
 
 ## Technology
@@ -35,12 +35,6 @@ python build_notebook.py
 Open `notebooks/DR_VLM_Comparison.ipynb` in Jupyter and run the cells to reproduce the pilot workflow.
 
 For the unverified real-run path, set `PILOT_MODE=0` before generating the notebook, then run it in a suitable GPU environment with `KAGGLE_USERNAME`, `KAGGLE_KEY`, `GEMINI_API_KEY` and `HF_TOKEN` configured. Do not use the checked-in pilot outputs as a substitute for that run.
-
-Run the tests with:
-
-```bash
-pytest tests/
-```
 
 ## Scope and limitations
 
