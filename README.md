@@ -1,36 +1,53 @@
-# Diabetic Retinopathy Grading: Gemini, MedGemma, and RetiZero
+# Diabetic Retinopathy: VLM Grading Pipeline
 
-[![Python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/) [![Jupyter](https://img.shields.io/badge/jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white)](https://jupyter.org/) [![PyTorch](https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/) [![Pandas](https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/) [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-
-A research scaffold for comparing Gemini, MedGemma, and RetiZero on diabetic-retinopathy severity grading using the APTOS 2019 dataset.
+A notebook pipeline scaffold for evaluating Gemini, MedGemma and RetiZero on diabetic-retinopathy grading with the APTOS 2019 dataset.
 
 ## Overview
 
-The project provides a notebook pipeline for data loading, prediction, and evaluation. RetiZero uses image-to-label embedding similarity, while the other systems generate predictions, so the methods are not identical.
+The repository currently ships with a **synthetic pilot**, not a real model comparison. By default, `build_notebook.py` generates a notebook with a balanced synthetic sample of 125 records and deterministic pseudo-random predictions. This mode exercises the sampling, scoring and reporting pipeline without downloading APTOS images or calling the models.
 
-## Highlights
+The script can also generate a real-run notebook when `PILOT_MODE=0`. That path is intended for a suitable GPU environment and requires Kaggle access plus the relevant model-service credentials. It has not been executed or validated against real model outputs in this repository.
 
-- Uses the ICDR 0–4 severity scale.
-- Calculates quadratic-weighted Cohen's kappa, accuracy with bootstrap confidence intervals, mean absolute grade error, per-class precision and recall, and confusion matrices.
-- Includes a pilot mode that runs without external credentials.
+## Repository contents
+
+- `build_notebook.py` — generates the pilot notebook by default, or the real-run notebook when requested.
+- `notebooks/` — generated comparison notebook.
+- `reports/final_report.md` — explanation of the pilot methodology and results.
+- `results/` — pilot metrics, predictions, summary tables and plots.
+- `tests/` — checks for metadata sampling, prediction reproducibility and evaluation logic.
+- `.env.example` — names of credentials used by the real-run workflow.
 
 ## Technology
 
-Python, Google Colab, `google-genai`, Hugging Face Transformers, PyTorch, RetiZero, Kaggle CLI, pandas, and scikit-learn.
+Python, Jupyter/nbformat, PyTorch, Hugging Face Transformers, Google GenAI, Kaggle CLI, pandas, NumPy and scikit-learn. GPU support is needed for the intended real model run, not for generating the synthetic pilot.
 
 ## Run locally
 
+Install the dependencies and generate the default pilot notebook:
+
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 python build_notebook.py
 ```
 
-For a real run, configure `KAGGLE_USERNAME`, `KAGGLE_KEY`, `GEMINI_API_KEY`, and `HF_TOKEN`, set `PILOT_MODE=0`, and execute the generated notebook in a suitable GPU environment.
+Open `notebooks/DR_VLM_Comparison.ipynb` in Jupyter and run the cells to reproduce the pilot workflow.
 
-## Notes and limitations
+For the unverified real-run path, set `PILOT_MODE=0` before generating the notebook, then run it in a suitable GPU environment with `KAGGLE_USERNAME`, `KAGGLE_KEY`, `GEMINI_API_KEY` and `HF_TOKEN` configured. Do not use the checked-in pilot outputs as a substitute for that run.
 
-Checked-in pilot outputs use synthetic data and seeded mock predictions. They are not real model results, clinical evidence, or a validated comparison. Real model inference has not yet been run. The APTOS 2019 dataset is not included and remains subject to its Kaggle terms.
+Run the tests with:
+
+```bash
+pytest tests/
+```
+
+## Scope and limitations
+
+The checked-in sample, ground-truth labels and model predictions are synthetic. The reported accuracy, kappa and other metrics measure the behaviour of seeded random predictions on synthetic data; they say nothing about the real grading performance of Gemini, MedGemma or RetiZero. No clinical conclusions can be drawn from this pilot, and the project is not a diagnostic tool. A real comparison remains to be run and independently reviewed.
+
+The APTOS 2019 dataset is not included in this repository and remains subject to its Kaggle terms.
 
 ## License
 
-MIT — see `LICENSE`.
+MIT. See [LICENSE](LICENSE).
