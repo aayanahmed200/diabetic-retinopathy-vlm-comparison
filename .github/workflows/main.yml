@@ -34,7 +34,7 @@ jobs:
         # here, since PILOT_MODE never imports them.
         run: |
           python -m pip install --upgrade pip
-          pip install nbformat nbclient nbconvert ipykernel pandas numpy scikit-learn matplotlib seaborn tabulate
+          pip install nbformat nbclient nbconvert ipykernel pandas numpy scikit-learn matplotlib seaborn tabulate pytest
 
       - name: Regenerate pilot notebook from build_notebook.py
         run: python build_notebook.py
@@ -70,6 +70,12 @@ jobs:
           test -f results/metrics.txt
           wc -l results/predictions.csv
           cat results/metrics.txt
+
+      - name: Run tests
+        # Checks the metadata fixture against the generator, prediction determinism across
+        # processes, and that results/metrics_summary.json recomputes from
+        # results/predictions.csv -- the claims the README makes about the checked-in run.
+        run: pytest tests/ -q
 
       - name: Upload pilot results artifact
         uses: actions/upload-artifact@v4

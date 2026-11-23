@@ -50,10 +50,10 @@ def code(text):
 
 
 # ---------------------------------------------------------------------------
-# Shared: the exact synthetic-metadata generator used both to write this notebook's
-# sampling cell AND tests/test_metadata_subset.csv, so the two can never drift apart the
-# way the old hand-typed mock files did. Executed for real below (not just embedded as
-# text) whenever this script runs in PILOT_MODE, to (re)write the test fixture.
+# The synthetic-metadata generator, defined once and used for two things: the notebook's
+# sampling cell and tests/test_metadata_subset.csv. Running this script in PILOT_MODE
+# executes it rather than only embedding it, so the fixture is rewritten from the same
+# code that produces the notebook's sample.
 PILOT_METADATA_SRC = '''\
 def build_pilot_metadata(n_per_grade=N_PER_GRADE, seed=RANDOM_SEED):
     """Deterministic synthetic metadata: n_per_grade images per ICDR grade 0-4 (125 total
@@ -568,12 +568,10 @@ Grade strictly on this rubric:
 
 Respond with ONLY a single digit 0-4. No words, no punctuation, no explanation.'''
 
-# Gemini 3.x models "think" before answering by default (thinking_level defaults to
-# "medium"), and thinking tokens count against the same output-token budget as the
-# visible answer -- for a one-digit answer that's pure overhead, and it's also what
-# was silently starving every prediction of real output (finish_reason=MAX_TOKENS,
-# response.text raising instead of returning "0".."4"). thinking_level="low" keeps a
-# fast sanity check without burning the whole budget on deliberation.
+# Gemini 3.x models think before answering by default (thinking_level defaults to
+# "medium"), and thinking tokens share the output budget with the visible answer. For a
+# one-digit reply that budget can be spent on deliberation, leaving finish_reason
+# MAX_TOKENS and no text to parse, so the level is set low here.
 GEMINI_CONFIG = types.GenerateContentConfig(
     thinking_config=types.ThinkingConfig(thinking_level="low"),
     max_output_tokens=512,
@@ -947,12 +945,10 @@ if torch.cuda.is_available():
 
 # --- Phase 2: load and run RetiZero now that the GPU has room for it ---
 print("\\n=== Phase 2: loading RetiZero ===")
-# This used to be an unguarded call: any failure here (a shape mismatch between the
-# downloaded checkpoint and the model, a CUDA OOM, a partial/corrupt weights file)
-# raised a raw traceback and skipped Phase 2 entirely -- with predictions.csv ending up
-# with a gemini_pred/medgemma_pred filled in but retizero_pred entirely missing, and no
-# indication of why. Catching it here gives an actionable message and still lets you
-# keep the Gemini/MedGemma results already saved to disk instead of losing the whole run.
+# A shape mismatch between the checkpoint and CLIPRModel, a CUDA OOM, or a partial
+# download would otherwise raise a bare traceback and skip Phase 2, leaving
+# predictions.csv with retizero_pred empty and no explanation. Catching it names the
+# cause and keeps the Gemini/MedGemma predictions already written to disk.
 try:
     retizero_model = load_retizero()
     print("RetiZero loaded successfully")
